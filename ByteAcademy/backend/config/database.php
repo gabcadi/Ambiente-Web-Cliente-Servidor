@@ -1,7 +1,7 @@
 <?php
 class Database {
     private $host = 'localhost';
-    private $db_name = 'byteacademy';
+    private $db_name = 'ambienteweb';
     private $username = 'root';
     private $password = '';
     public $conn;

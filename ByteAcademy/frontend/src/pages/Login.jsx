@@ -9,7 +9,7 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost/ByteAcademy/backend/auth/login.php', {
+        const response = await fetch('/api/auth/login.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
