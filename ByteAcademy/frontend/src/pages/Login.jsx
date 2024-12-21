@@ -75,6 +75,9 @@ export default function Login() {
                                 Iniciar sesión
                             </Button>
                         </div>
+                        <p className="mt-3 text-center">
+                            ¿No tienes una cuenta? <a href="/Registro">Registrate</a>
+                        </p>
                     </Form>
                     {message && <p className="mt-3 text-center">{message}</p>}
                 </Card.Body>

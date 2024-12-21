@@ -12,6 +12,7 @@ import SobreNosotros from "./pages/SobreNosotros";
 import Cursos from "./pages/Cursos";
 import Contactar from "./pages/Contactar";
 import PlanEstudios from "./pages/PlanEstudios";
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
           <Route path="/Cursos" element={<Cursos />} />
           <Route path="/Contactar" element={<Contactar />} />
           <Route path="/PlanEstudios" element={<PlanEstudios />} />
+          <Route path="/admin" element={<AdminPanel />} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
