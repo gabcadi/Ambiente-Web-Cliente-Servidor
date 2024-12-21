@@ -24,6 +24,14 @@ class User {
         }
     }
 
+    public function getUserByUsername($username) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE Username = :username";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function register($username, $nombre, $apellido, $email, $password) {
         $query = "INSERT INTO " . $this->table_name . " (Username, Nombre, Apellido, Email, Contraseña, FechaRegistro) VALUES (:username, :nombre, :apellido, :email, :password, CURDATE())";
         $stmt = $this->conn->prepare($query);
@@ -74,6 +82,34 @@ class User {
         } else {
             return false;
         }
+    }
+
+    public function usernameExists($username, $id = null) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE Username = :username";
+        if ($id) {
+            $query .= " AND IdUsuario != :id";
+        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $username);
+        if ($id) {
+            $stmt->bindParam(':id', $id);
+        }
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function emailExists($email, $id = null) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE Email = :email";
+        if ($id) {
+            $query .= " AND IdUsuario != :id";
+        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':email', $email);
+        if ($id) {
+            $stmt->bindParam(':id', $id);
+        }
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 }
 ?>

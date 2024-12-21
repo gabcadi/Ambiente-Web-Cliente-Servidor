@@ -25,13 +25,9 @@ export default function Login() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const data = await response.json();
-            console.log('data', data);
             if (data.status) {
-                setAuth({ username, nombre: data.Nombre });
-                document.cookie = `username=${username}; path=/`;
-                document.cookie = `nombre=${data.Nombre}; path=/`;
+                setAuth({ user_id: data.IdUsuario, username, nombre: data.Nombre });
                 navigate('/');
             } else {
                 setMessage(data.message);

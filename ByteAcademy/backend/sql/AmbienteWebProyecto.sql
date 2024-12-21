@@ -35,8 +35,19 @@ CREATE TABLE Curso (
     Titulo VARCHAR(100) NOT NULL,
     Nivel VARCHAR(50) NOT NULL,
     Descripcion TEXT,
-    Duracion INT NOT NULL
+    Contenido TEXT NOT NULL
 );
+
+-- Tabla ProgresoUsuario
+CREATE TABLE ProgresoUsuario (
+    IdProgresoUsuario INT AUTO_INCREMENT PRIMARY KEY,
+    IdUsuario INT NOT NULL,
+    IdCurso INT NOT NULL,
+    Codigo TEXT,
+    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
+    FOREIGN KEY (IdCurso) REFERENCES Curso(IdCurso)
+);
+
 
 -- Tabla Modulo
 CREATE TABLE Modulo (

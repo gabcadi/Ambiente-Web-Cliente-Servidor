@@ -92,14 +92,3 @@ body {
     background-color: var(--secondary-color);
     color: var(--white);
 }
-
-.footer {
-    background: var(--primary-color);
-    color: var(--white);
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 1rem 0;
-    text-align: center;
-    height: 4rem;   
-}

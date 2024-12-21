@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Modal, Form } from 'react-bootstrap';
+import { Container, Table, Button, Modal, Form, Alert } from 'react-bootstrap';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [show, setShow] = useState(false);
-  const [formData, setFormData] = useState({ id: '', username: '', nombre: '', apellido: '', email: '', password: '' });
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [formData, setFormData] = useState({ id: '', username: '', nombre: '', apellido: '', email: '', password: '', confirmPassword: '' });
   const [isEditing, setIsEditing] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     fetchUsers();
@@ -31,7 +34,8 @@ export default function AdminPanel() {
   const handleClose = () => {
     setShow(false);
     setIsEditing(false);
-    setFormData({ id: '', username: '', nombre: '', apellido: '', email: '', password: '' });
+    setFormData({ id: '', username: '', nombre: '', apellido: '', email: '', password: '', confirmPassword: '' });
+    setErrorMessage('');
   };
 
   const handleChange = (e) => {
@@ -41,6 +45,10 @@ export default function AdminPanel() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Las contraseñas no coinciden");
+      return;
+    }
     try {
       const method = isEditing ? 'PUT' : 'POST';
       const response = await fetch('/api/users.php', {
@@ -50,13 +58,16 @@ export default function AdminPanel() {
         },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (!response.ok || !data.status) {
+        setErrorMessage(data.message || `Error ${isEditing ? 'updating' : 'adding'} user`);
+        return;
       }
       fetchUsers();
       handleClose();
     } catch (error) {
       console.error(`Error ${isEditing ? 'updating' : 'adding'} user:`, error);
+      setErrorMessage(`Error ${isEditing ? 'updating' : 'adding'} user`);
     }
   };
 
@@ -68,27 +79,34 @@ export default function AdminPanel() {
       apellido: user.Apellido,
       email: user.Email,
       password: user.Contraseña,
+      confirmPassword: user.Contraseña,
     });
     setIsEditing(true);
     handleShow();
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
       const response = await fetch('/api/users.php', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: userToDelete }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       fetchUsers();
+      setShowConfirm(false);
     } catch (error) {
       console.error('Error deleting user:', error);
     }
+  };
+
+  const confirmDelete = (id) => {
+    setUserToDelete(id);
+    setShowConfirm(true);
   };
 
   return (
@@ -117,8 +135,8 @@ export default function AdminPanel() {
                 <td>{user.Apellido}</td>
                 <td>{user.Email}</td>
                 <td>
-                  <Button variant="warning" className="me-2" onClick={() => handleEdit(user)}>Editar</Button>
-                  <Button variant="danger" onClick={() => handleDelete(user.IdUsuario)}>Eliminar</Button>
+                  <Button variant="success" className="me-2" onClick={() => handleEdit(user)}>Editar</Button>
+                  <Button variant="danger" onClick={() => confirmDelete(user.IdUsuario)}>Eliminar</Button>
                 </td>
               </tr>
             ))}
@@ -129,9 +147,10 @@ export default function AdminPanel() {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{isEditing ? 'Edit User' : 'Add User'}</Modal.Title>
+          <Modal.Title>{isEditing ? 'Edita un usuario' : 'Añade un usuario'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="username">
               <Form.Label>Username</Form.Label>
@@ -174,11 +193,21 @@ export default function AdminPanel() {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="password">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>Contraseña</Form.Label>
               <Form.Control
                 type="password"
                 name="password"
                 value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="confirmPassword">
+              <Form.Label>Confirmar Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
                 onChange={handleChange}
                 required
               />
@@ -188,6 +217,23 @@ export default function AdminPanel() {
             </Button>
           </Form>
         </Modal.Body>
+      </Modal>
+
+      <Modal show={showConfirm} onHide={() => setShowConfirm(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Eliminar Usuario</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¿Estás seguro de que deseas eliminar este usuario?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirm(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Eliminar
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

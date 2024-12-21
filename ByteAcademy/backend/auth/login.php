@@ -31,8 +31,9 @@ try {
         $result = $user->login($username, $password);
 
         if ($result) {
+            $userData = $user->getUserByUsername($username);
             http_response_code(200);
-            echo json_encode(["message" => "Login successful", "status" => true]);
+            echo json_encode(["message" => "Login successful", "status" => true, "IdUsuario" => $userData['IdUsuario'], "Nombre" => $userData['Nombre']]);
         } else {
             http_response_code(401);
             echo json_encode(["message" => "Invalid credentials", "status" => false]);

@@ -44,9 +44,9 @@ export default function Contactar() {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
+          <div className='d-flex justify-content-center'><Button variant="primary" type="submit">
             Enviar
-          </Button>
+          </Button></div>
         </Form>
       </Container>
       <Footer />

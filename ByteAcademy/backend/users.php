@@ -26,11 +26,27 @@ try {
             break;
         case 'POST':
             $data = json_decode(file_get_contents("php://input"));
+            if ($user->usernameExists($data->username)) {
+                echo json_encode(["status" => false, "message" => "El nombre de usuario ya está en uso"]);
+                break;
+            }
+            if ($user->emailExists($data->email)) {
+                echo json_encode(["status" => false, "message" => "El correo electrónico ya está en uso"]);
+                break;
+            }
             $result = $user->register($data->username, $data->nombre, $data->apellido, $data->email, $data->password);
             echo json_encode(["status" => $result]);
             break;
         case 'PUT':
             $data = json_decode(file_get_contents("php://input"));
+            if ($user->usernameExists($data->username, $data->id)) {
+                echo json_encode(["status" => false, "message" => "El nombre de usuario ya está en uso"]);
+                break;
+            }
+            if ($user->emailExists($data->email, $data->id)) {
+                echo json_encode(["status" => false, "message" => "El correo electrónico ya está en uso"]);
+                break;
+            }
             $result = $user->updateUser($data->id, $data->username, $data->nombre, $data->apellido, $data->email, $data->password);
             echo json_encode(["status" => $result]);
             break;

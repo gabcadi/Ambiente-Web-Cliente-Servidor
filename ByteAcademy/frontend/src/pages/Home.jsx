@@ -1,24 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { AuthContext } from '../context/AuthContext';
 
 export default function Home() {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
 
-  console.log(auth);
+  useEffect(() => {
+    if (auth) {
+      setLoading(false);
+    }
+  }, [auth]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <Navbar />
       <main className="hero-section text-center py-5">
         <div className="container">
-          <h1 className="display-4">Aprende a programar</h1>
+          {auth ? <h1 className="mt-4 display-4">Hola, <label className='font-weight-bold'>{auth.nombre}</label></h1> : <h1 className="mt-4">Hola</h1>}
+          <h1 className="display-4">¿Qué esperas para aprender a programar, ya?</h1>
           <p className="lead">"Aprender a programar es abrir la puerta a un mundo de posibilidades infinitas. Cada línea de código es un paso hacia la creación de algo extraordinario."</p>
           <a href="/Cursos" className="btn btn-primary btn-lg">
             Comienza ya
           </a>
-          {auth ? <h1 className="mt-4">Bienvenido {auth.Nombre}</h1> : <h1 className="mt-4">Bienvenido</h1>}
         </div>
       </main>
 

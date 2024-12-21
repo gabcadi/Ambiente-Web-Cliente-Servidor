@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Container, Card, Form, Button } from 'react-bootstrap';
+import { Container, Card, Form, Button, Toast } from 'react-bootstrap';
 import logo from '../assets/Logo.png';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Registro() {
     const [username, setUsername] = useState('');
@@ -8,10 +9,17 @@ export default function Registro() {
     const [apellido, setApellido] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [showToast, setShowToast] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (password !== confirmPassword) {
+            setMessage("Las contraseñas no coinciden");
+            setShowToast(true);
+            return;
+        }
         try {
             const response = await fetch('/api/auth/register.php', {
                 method: 'POST',
@@ -26,22 +34,22 @@ export default function Registro() {
             }
 
             const data = await response.json();
-            console.log('data', data);
-
             if (data.status) {
-                setMessage("User registered successfully");
+                setMessage("Usuario registrado exitosamente!");
             } else {
-                if (data.message.includes("Username")) {
-                    setMessage("Username is already taken");
-                } else if (data.message.includes("Email")) {
-                    setMessage("Email is already taken");
+                if (data.message.includes("Nombre")) {
+                    setMessage("El nombre de usuario ya está en uso");
+                } else if (data.message.includes("Correo")) {
+                    setMessage("El correo electrónico ya está en uso");
                 } else {
-                    setMessage("User registration failed");
+                    setMessage("Error en el registro de usuario");
                 }
             }
+            setShowToast(true);
         } catch (error) {
             console.error('Error:', error);
-            setMessage("An error occurred during registration");
+            setMessage("Ocurrió un error durante el registro");
+            setShowToast(true);
         }
     };
 
@@ -106,13 +114,26 @@ export default function Registro() {
                                 required
                             />
                         </Form.Group>
+                        <Form.Group className="mb-3" controlId="confirmPassword">
+                            <Form.Label>Confirmar Contraseña</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="Confirma tu contraseña"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
                         <div className="d-grid">
                             <Button type="submit" variant="warning">
                                 Registrar
                             </Button>
                         </div>
                     </Form>
-                    {message && <p className="mt-3 text-center">{message}</p>}
+                    <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide>
+                        <Toast.Body>{message}</Toast.Body>
+                    </Toast>
                     <p className="mt-3 text-center">
                         ¿Ya tienes una cuenta? <a href="/Login">Iniciar sesión</a>
                     </p>

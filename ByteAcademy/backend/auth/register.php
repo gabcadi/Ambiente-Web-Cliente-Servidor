@@ -31,6 +31,14 @@ try {
         $password = $data->password;
 
         $user = new User();
+        if ($user->usernameExists($username)) {
+            echo json_encode(["status" => false, "message" => "El nombre de usuario ya está en uso"]);
+            return;
+        }
+        if ($user->emailExists($email)) {
+            echo json_encode(["status" => false, "message" => "El correo electrónico ya está en uso"]);
+            return;
+        }
         $result = $user->register($username, $nombre, $apellido, $email, $password);
 
         if ($result) {
