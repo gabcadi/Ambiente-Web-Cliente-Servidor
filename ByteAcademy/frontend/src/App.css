@@ -7,13 +7,30 @@
     --white: #ffffff;
 }
 
+html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
+    height: 100%;
     margin: 0;
+    display: flex;
     padding: 0;
+    flex-direction: column;
     line-height: 1.6;
+}
+
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .main-header {
@@ -82,5 +99,7 @@ body {
     position: absolute;
     bottom: 0;
     width: 100%;
+    padding: 1rem 0;
+    text-align: center;
     height: 4rem;   
 }
